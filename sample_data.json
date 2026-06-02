@@ -1,0 +1,10 @@
+[
+  {"ProductID": 1, "Sales": 15000, "Units": 100, "Region": "North", "Quarter": "Q1", "Profit": 3500},
+  {"ProductID": 2, "Sales": 22000, "Units": 150, "Region": "South", "Quarter": "Q1", "Profit": 5200},
+  {"ProductID": 3, "Sales": 18500, "Units": 120, "Region": "East", "Quarter": "Q2", "Profit": 4100},
+  {"ProductID": 4, "Sales": 25000, "Units": 180, "Region": "West", "Quarter": "Q2", "Profit": 6200},
+  {"ProductID": 5, "Sales": 16200, "Units": 110, "Region": "North", "Quarter": "Q3", "Profit": 3800},
+  {"ProductID": 6, "Sales": 23500, "Units": 160, "Region": "South", "Quarter": "Q3", "Profit": 5600},
+  {"ProductID": 7, "Sales": 20100, "Units": 135, "Region": "East", "Quarter": "Q4", "Profit": 4700},
+  {"ProductID": 8, "Sales": 26200, "Units": 190, "Region": "West", "Quarter": "Q4", "Profit": 6500}
+]

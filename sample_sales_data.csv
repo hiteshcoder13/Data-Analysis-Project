@@ -1,0 +1,11 @@
+Product_ID,Sales_Amount,Units_Sold,Customer_Segment,Region,Profit
+1,15000,100,Premium,North,3500
+2,22000,150,Standard,South,5200
+3,18500,120,Premium,East,4100
+4,25000,180,Standard,West,6200
+5,16200,110,Budget,North,3800
+6,23500,160,Premium,South,5600
+7,20100,135,Standard,East,4700
+8,26200,190,Standard,West,6500
+9,14800,95,Budget,North,3200
+10,21500,145,Premium,South,5100
