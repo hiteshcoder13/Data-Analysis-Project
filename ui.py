@@ -1,10 +1,14 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 from pathlib import Path
+from io import BytesIO
+import base64
 import os
 import socket
 import threading
 import time
+import mammoth
 import uvicorn
 
 API_HOST = os.getenv("FASTAPI_HOST", "127.0.0.1")
@@ -24,6 +28,98 @@ def _is_port_open(host, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.5)
         return sock.connect_ex((host, port)) == 0
+
+
+def _convert_docx_image(image):
+    with image.open() as image_bytes:
+        encoded = base64.b64encode(image_bytes.read()).decode("ascii")
+    return {"src": f"data:{image.content_type};base64,{encoded}"}
+
+
+def render_docx_preview(report_bytes):
+    result = mammoth.convert_to_html(
+        BytesIO(report_bytes),
+        convert_image=mammoth.images.img_element(_convert_docx_image),
+    )
+
+    preview_html = f"""
+    <!doctype html>
+    <html>
+    <head>
+        <style>
+            body {{
+                margin: 0;
+                padding: 24px;
+                background: #f6f7fb;
+                color: #1f2937;
+                font-family: Calibri, Arial, sans-serif;
+                line-height: 1.55;
+            }}
+            .page {{
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 36px 44px;
+                background: #ffffff;
+                border: 1px solid #d8dee9;
+                box-shadow: 0 10px 32px rgba(15, 23, 42, 0.12);
+            }}
+            h1, h2, h3 {{
+                color: #182848;
+                margin: 1.1em 0 0.45em;
+            }}
+            h1 {{
+                font-size: 30px;
+                border-bottom: 2px solid #4b6cb7;
+                padding-bottom: 8px;
+            }}
+            h2 {{
+                font-size: 23px;
+            }}
+            h3 {{
+                font-size: 18px;
+            }}
+            p {{
+                margin: 0.45em 0;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin: 16px 0 22px;
+                font-size: 14px;
+            }}
+            th, td {{
+                border: 1px solid #cfd8e3;
+                padding: 8px 10px;
+                vertical-align: top;
+            }}
+            tr:first-child td, th {{
+                background: #eef3ff;
+                font-weight: 700;
+            }}
+            img {{
+                display: block;
+                max-width: 100%;
+                height: auto;
+                margin: 18px auto;
+                border: 1px solid #e5e7eb;
+            }}
+        </style>
+    </head>
+    <body>
+        <main class="page">
+            {result.value}
+        </main>
+    </body>
+    </html>
+    """
+
+    st.subheader("Report Preview")
+    components.html(preview_html, height=760, scrolling=True)
+
+    if result.messages:
+        with st.expander("Preview conversion notes"):
+            for message in result.messages:
+                st.write(f"{message.type}: {message.message}")
 
 
 @st.cache_resource(show_spinner=False)
@@ -154,6 +250,7 @@ if uploaded_file is not None:
                     
                     # UI feedback and download button
                     st.balloons()
+                    render_docx_preview(report_bytes)
                     
                     st.download_button(
                         label="📥 Download Generated DOCX Report",
